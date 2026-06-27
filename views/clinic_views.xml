@@ -1,59 +1,146 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <odoo>
 
-    <record id="clinic_tree_view" model="ir.ui.view">
-        <field name="name">hospital.clinic.tree</field>
+    <!-- ==================== LIST VIEW ==================== -->
+    <record id="clinic_list_view" model="ir.ui.view">
+        <field name="name">hospital.clinic.list</field>
         <field name="model">hospital.clinic</field>
         <field name="arch" type="xml">
-
-            <list>
-
+            <list decoration-success="state == 'open'" decoration-muted="state == 'close'">
                 <field name="name"/>
+                <field name="doctor_id"/>
                 <field name="open_datetime"/>
                 <field name="end_datetime"/>
-                <field name="description"/>
-
+                <field name="cost"/>
+                <field name="state"/>
             </list>
-
         </field>
     </record>
 
+    <!-- ==================== FORM VIEW ==================== -->
     <record id="clinic_form_view" model="ir.ui.view">
         <field name="name">hospital.clinic.form</field>
         <field name="model">hospital.clinic</field>
         <field name="arch" type="xml">
-
             <form>
+
+                <header>
+                    <button name="action_open" type="object" string="Open"
+                            class="oe_highlight"
+                            invisible="state != 'new'"
+                            groups="hospital_system.group_hospital_manager"/>
+                    <button name="action_close" type="object" string="Close"
+                            invisible="state != 'open'"
+                            groups="hospital_system.group_hospital_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,open,close"/>
+                </header>
 
                 <sheet>
 
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Clinic Name"/>
+                        </h1>
+                    </div>
+
                     <group>
-
-                        <field name="name"/>
-                        <field name="open_datetime"/>
-                        <field name="end_datetime"/>
-                        <field name="description"/>
-
+                        <group>
+                            <field name="doctor_id"/>
+                            <field name="cost"/>
+                        </group>
+                        <group>
+                            <field name="open_datetime"/>
+                            <field name="end_datetime"/>
+                        </group>
                     </group>
+
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Patients">
+                            <field name="patient_ids"/>
+                        </page>
+                    </notebook>
 
                 </sheet>
 
             </form>
-
         </field>
     </record>
 
-    <record id="clinic_action" model="ir.actions.act_window">
-
-        <field name="name">Clinics</field>
-
-        <field name="res_model">hospital.clinic</field>
-
-        <field name="view_mode">list,form</field>
-
+    <!-- ==================== KANBAN VIEW ==================== -->
+    <record id="clinic_kanban_view" model="ir.ui.view">
+        <field name="name">hospital.clinic.kanban</field>
+        <field name="model">hospital.clinic</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="doctor_id"/>
+                <field name="cost"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_title">
+                                    <strong><field name="name"/></strong>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div>
+                                    <field name="doctor_id"/>
+                                </div>
+                                <div>
+                                    Cost: <field name="cost"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="state" widget="label_selection"
+                                           options="{'classes': {'new': 'default', 'open': 'success', 'close': 'danger'}}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
     </record>
 
+    <!-- ==================== PIVOT VIEW ==================== -->
+    <record id="clinic_pivot_view" model="ir.ui.view">
+        <field name="name">hospital.clinic.pivot</field>
+        <field name="model">hospital.clinic</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="doctor_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ==================== GRAPH VIEW ==================== -->
+    <record id="clinic_graph_view" model="ir.ui.view">
+        <field name="name">hospital.clinic.graph</field>
+        <field name="model">hospital.clinic</field>
+        <field name="arch" type="xml">
+            <graph>
+                <field name="doctor_id" type="row"/>
+                <field name="cost" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ==================== ACTION ==================== -->
+    <record id="clinic_action" model="ir.actions.act_window">
+        <field name="name">Clinics</field>
+        <field name="res_model">hospital.clinic</field>
+        <field name="view_mode">list,form,kanban,pivot,graph</field>
+    </record>
+
+    <!-- ==================== MENUS ==================== -->
     <menuitem
         id="hospital_root_menu"
         name="Hospital"
@@ -64,6 +151,7 @@
         name="Clinics"
         parent="hospital_root_menu"
         action="clinic_action"
+        sequence="10"
     />
 
 </odoo>

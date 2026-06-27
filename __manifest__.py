@@ -1,32 +1,38 @@
 {
     'name': "hospital_system",
 
-    'summary': "Short (1 phrase/line) summary of the module's purpose",
+    'summary': "Manage clinics, doctors and patients",
 
     'description': """
-Long description of module's purpose
+Hospital Management
+====================
+- Manage Clinics (with cost, state, doctor, patients)
+- Manage Patients
+- Open/Close clinic workflow restricted to a dedicated security group
+- Doctors (res.partner) show the clinics they are assigned to
+- List, Form, Kanban, Pivot and Graph views for Clinics
     """,
 
     'author': "My Company",
     'website': "https://www.yourcompany.com",
 
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
-    'category': 'Uncategorized',
+    'category': 'Services/Hospital',
     'version': '0.1',
 
     # any module necessary for this one to work correctly
     'depends': ['base'],
 
     # always loaded
- 'data': [
-    'security/ir.model.access.csv',
-    'views/clinic_views.xml',
-],
-    # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
-}
+    'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
 
+        'views/clinic_views.xml',
+        'views/patient_views.xml',
+        'views/res_partner_views.xml',
+    ],
+
+    'application': True,
+    'installable': True,
+    'license': 'LGPL-3',
+}
